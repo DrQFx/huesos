@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Hahaha:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Hahaha_jar</output-path>
+    <root id="archive" name="Hahaha.jar">
+      <element id="module-output" name="HuesOS" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,158 @@
+Label {
+    id: greeting
+    text: "Calculator v0.1"
+    x: 320
+    y: 0
+    color: 0xFFFFFF
+}
+
+Label {
+    id: result
+    text: "0"
+    x: 320
+    y: 128
+    color: 0xFFFFFF
+}
+
+Button {
+    id: num_0
+    text: "0"
+    x: 208
+    y: 500
+    width: 64
+    height: 64
+    color: 0x5c5c5c
+    hover: 0x787878
+    click-color: 0x9c9c9c
+}
+
+Button {
+    id: num_1
+    x: 276
+    y: 500
+    width: 64
+    height: 64
+    color: 0x5c5c5c
+    hover: 0x787878
+    click-color: 0x9c9c9c
+}
+
+Button {
+    id: num_2
+    x: 344
+    y: 500
+    width: 64
+    height: 64
+    color: 0x5c5c5c
+    hover: 0x787878
+    click-color: 0x9c9c9c
+}
+
+Button {
+    id: equal
+    x: 412
+    y: 436
+    width: 64
+    height: 128
+    color: 0x5c5c5c
+    hover: 0x787878
+    click-color: 0x9c9c9c
+}
+
+Button {
+    id: num_3
+    x: 208
+    y: 434
+    width: 64
+    height: 64
+    color: 0x5c5c5c
+    hover: 0x787878
+    click-color: 0x9c9c9c
+}
+
+Button {
+    id: num_4
+    x: 276
+    y: 434
+    width: 64
+    height: 64
+    color: 0x5c5c5c
+    hover: 0x787878
+    click-color: 0x9c9c9c
+}
+
+Button {
+    id: num_5
+    x: 344
+    y: 434
+    width: 64
+    height: 64
+    color: 0x5c5c5c
+    hover: 0x787878
+    click-color: 0x9c9c9c
+}
+
+Button {
+    id: num_6
+    x: 208
+    y: 368
+    width: 64
+    height: 64
+    color: 0x5c5c5c
+    hover: 0x787878
+    click-color: 0x9c9c9c
+}
+
+Button {
+    id: num_7
+    x: 276
+    y: 368
+    width: 64
+    height: 64
+    color: 0x5c5c5c
+    hover: 0x787878
+    click-color: 0x9c9c9c
+}
+
+Button {
+    id: num_8
+    x: 344
+    y: 368
+    width: 64
+    height: 64
+    color: 0x5c5c5c
+    hover: 0x787878
+    click-color: 0x9c9c9c
+}
+Button {
+    id: num_9
+    x: 344
+    y: 300
+    width: 64
+    height: 64
+    color: 0x5c5c5c
+    hover: 0x787878
+    click-color: 0x9c9c9c
+}
+
+Button {
+    id: act_plus
+    x: 412
+    y: 368
+    width: 64
+    height: 64
+    color: 0x5c5c5c
+    hover: 0x787878
+    click-color: 0x9c9c9c
+}
+
+Button {
+    id: act_minus
+    x: 208
+    y: 300
+    width: 64
+    height: 64
+    color: 0x5c5c5c
+    hover: 0x787878
+    click-color: 0x9c9c9c
+}
