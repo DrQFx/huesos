@@ -3,8 +3,9 @@ package qf.huesos.apps;
 import qf.huesos.kernel.Kernel;
 import qf.huesos.kernel.Screen;
 import qf.huesos.kernel.SysCall;
+import qf.huesos.provider.RAHandler;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.List;
 
 import java.awt.event.KeyEvent;
@@ -13,13 +14,13 @@ import java.awt.event.KeyListener;
 public class Terminal implements KeyListener {
     private final Screen screen;
     private SysCall call;
+    private RAHandler ra = new RAHandler();
 
     private int cursorX = 0;
     private int cursorY = 0;
 
     private final int charWidth;
     private final int lineHeight;
-
 
     private StringBuilder commandInput = new StringBuilder();
     private final String PROMPT = "> ";
@@ -73,7 +74,6 @@ public class Terminal implements KeyListener {
 
         if (cursorY + lineHeight > screen.getHeight()) {
             screen.scrollUp(lineHeight, screen.COLOR_BLACK);
-            cursorY -= lineHeight;
         }
     }
 
@@ -100,10 +100,8 @@ public class Terminal implements KeyListener {
             newLine();
             try {
                 executeCommand(cmd);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
+            } catch (Exception err) {
+                println("Error: " + err.getMessage(), screen.COLOR_RED);
             }
             commandInput.setLength(0);
             print(PROMPT, screen.COLOR_WHITE);
@@ -163,16 +161,32 @@ public class Terminal implements KeyListener {
             case "applist":
                 println("Available applications: calculator", screen.COLOR_WHITE);
                 break;
+
+            // test
+            case "cd":
+                call.setDirectory(args);
+                break;
+            case "crd":
+                println(call.getDirectory(), screen.COLOR_WHITE);
+                break;
+
             case "calculator":
                 Kernel.getInstance().runApplication(new Calculator(Kernel.screen));
                 break;
+            case "settings":
+                Kernel.getInstance().runApplication(new Settings(Kernel.screen));
+                break;
             default:
-                println("Unknown command: " + command, screen.COLOR_RED);
+                if (isExecutable(cmd)) {
+                    ra.run(call.getDirectory() + "/" + cmd);
+                } else {
+                    println("Unknown command: " + command, screen.COLOR_RED);
+                }
         }
     }
 
     private void help(String args) {
-        if (args.isEmpty() || args == " ") {
+        if (args.isEmpty() || args.equals(" ")) {
             println("Commands: help, clear, sinfo, down, ls, md <name>, mf <name>, applist", screen.COLOR_WHITE);
             newLine();
             println("You can also run an application like calculator by just typing its name.\nTo get a list of the applications run 'applist'", screen.COLOR_WHITE);
@@ -218,11 +232,27 @@ public class Terminal implements KeyListener {
     }
 
     private void ls() {
-        List<String> files = call.getAllFilesInDirectory();
+        File dir = new File(call.getDirectory());
+        List<String> files = call.getAllFilesInDirectory(dir);
+
+        if (files.isEmpty()) {
+            println("The directory is empty", screen.COLOR_YELLOW);
+        }
 
         for (String file : files) {
             println(file, screen.COLOR_WHITE);
         }
+    }
+
+    private boolean isExecutable(String filename) {
+        List<String> files = call.getAllFilesInDirectory();
+
+        for (String file : files) {
+            if (file.equals(filename)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void fetch() {

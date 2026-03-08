@@ -1,10 +1,7 @@
 package qf.huesos.kernel.graphics;
 
 import qf.huesos.kernel.Screen;
-import qf.huesos.kernel.graphics.TUI.Button;
-import qf.huesos.kernel.graphics.TUI.CheckBox;
-import qf.huesos.kernel.graphics.TUI.Label;
-import qf.huesos.kernel.graphics.TUI.TUIElement;
+import qf.huesos.kernel.graphics.TUI.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -38,6 +35,7 @@ public class TerminalApplication extends TerminalUserInterface {
                     case "Button" -> new Button(screen);
                     case "Label" -> new Label(screen);
                     case "Checkbox" -> new CheckBox(screen);
+                    case "Rectangle" -> new Rectangle(screen);
                     default -> throw new RuntimeException("Unknown UI type: " + type);
                 };
 
@@ -65,7 +63,7 @@ public class TerminalApplication extends TerminalUserInterface {
         super.start();
     }
 
-    protected void onUiLoaded() {}
+    protected void onUiLoaded() throws IOException {}
 
     void applyProperty(TUIElement element, String key, String value) throws Exception {
         switch (key) {
@@ -74,6 +72,13 @@ public class TerminalApplication extends TerminalUserInterface {
             case "width" -> element.width = Integer.parseInt(value);
             case "height" -> element.height = Integer.parseInt(value);
             case "color" -> element.color = parseColor(value);
+            case "text-color" -> {
+                if (element instanceof Button) {
+                    ((Button) element).setTextColor(parseColor(value));
+                } else {
+                    throw new Exception("The element is not a button");
+                }
+            }
             case "id" -> {
                 element.id = value;
                 TUIElementsByID.put(element.id, element);

@@ -82,7 +82,7 @@ public class Filesystem {
 
     public void newFile(String name) {
         try {
-            File file = new File("fs/" + name);
+            File file = new File(directory + "/" + name);
             file.createNewFile();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -107,6 +107,7 @@ public class Filesystem {
 
         return list;
     }
+
     public List<String> getAllFilesInDirectory(File file) {
         List<String> list = new ArrayList<>();
         File[] files = file.listFiles();
@@ -116,5 +117,12 @@ public class Filesystem {
         }
 
         return list;
+    }
+
+    public void setDirectory(String pathname) {
+        this.directory = pathname;
+    }
+    public String getDirectory() {
+        return this.directory;
     }
 }

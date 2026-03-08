@@ -1,0 +1,68 @@
+
+Rectangle {
+    id: left_panel
+    x: 0
+    y: 0
+    width: 248
+    height: 640
+    color: 0x363636
+}
+
+Label {
+    id: settings_label
+    text: "Settings"
+    x: 80
+    y: 16
+    color: 0xFFFFFF
+}
+
+Button {
+    id: category_general
+    text: "General"
+    text-color: 0xFFFFFF
+    x: 16
+    y: 64
+    width: 216
+    height: 64
+    color: 0x4d4d4d
+    hover: 0x858585
+    click-color: 0xadadad
+}
+
+Button {
+    id: exit_button
+    text: "Exit"
+    text-color: 0xFFFFFF
+    x: 16
+    y: 558
+    width: 216
+    height: 64
+    color: 0x4d4d4d
+    hover: 0x858585
+    click-color: 0xadadad
+}
+
+Label {
+    id: test_param
+    text: "Test param"
+    x: 264
+    y: 18
+    color: 0xFFFFFF
+}
+
+Checkbox {
+    id: test_box
+    x: 512
+    y: 16
+    width: 32
+    height: 32
+    color: 0x669466
+}
+
+Label {
+    id: warning
+    text: "WARNING! Alpha version of HuesOS"
+    color: 0xFF0000
+    x: 264
+    y: 600
+}

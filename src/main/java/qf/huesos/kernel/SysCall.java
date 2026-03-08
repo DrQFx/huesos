@@ -1,5 +1,7 @@
 package qf.huesos.kernel;
 
+import qf.huesos.apps.Terminal;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -7,7 +9,11 @@ import java.util.List;
 public class SysCall {
 
     // General
-    public void print(String text) {
+    public void print(String text, int color) {
+        Kernel.getInstance().terminal.println(text, color);
+    }
+    public void fillRectangle(int x, int y, int w, int h, int color) {
+        Kernel.screen.fillRect(x, y, w, h, color);
     }
 
     // Files
@@ -37,5 +43,11 @@ public class SysCall {
     }
     public void writeToFile(String name, List<String> data) throws IOException {
         Kernel.getInstance().getFilesystem().writeToFile(name, data);
+    }
+    public void setDirectory(String pathname) {
+        Kernel.getInstance().getFilesystem().setDirectory(pathname);
+    }
+    public String getDirectory() {
+        return Kernel.getInstance().getFilesystem().getDirectory();
     }
 }

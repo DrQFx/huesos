@@ -6,12 +6,13 @@ public class Kernel {
     private static Kernel instance;
     private final Scheduler scheduler;
     private final Filesystem filesystem;
+    public Terminal terminal;
 
     public static final Screen screen = new Screen(800, 640);
 
 
     public Kernel() {
-        Terminal terminal = new Terminal(screen);
+        terminal = new Terminal(screen);
         scheduler = new Scheduler();
         filesystem = new Filesystem("fs");
     }

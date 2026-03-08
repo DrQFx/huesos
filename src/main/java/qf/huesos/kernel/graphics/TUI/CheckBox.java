@@ -3,13 +3,25 @@ package qf.huesos.kernel.graphics.TUI;
 
 import qf.huesos.kernel.Screen;
 
+import java.io.IOException;
+
 public class CheckBox extends TUIElement {
+    public Action onClick;
+
     public CheckBox(Screen screen) {
         super(screen);
     }
 
+    public void click() throws IOException {
+        isClicked = !isClicked;
+
+        if (onClick != null) {
+            onClick.run();
+        }
+    }
+
     @Override
-    public void draw() {
+    public void draw() throws IOException {
         int size = Math.min(width, height);
         int border = size / 8;
         int padding = size / 4;

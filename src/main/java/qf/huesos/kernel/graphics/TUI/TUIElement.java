@@ -2,6 +2,8 @@ package qf.huesos.kernel.graphics.TUI;
 
 import qf.huesos.kernel.Screen;
 
+import java.io.IOException;
+
 public class TUIElement {
     Screen screen;
     public int x;
@@ -61,11 +63,11 @@ public class TUIElement {
         isHovered = false;
     }
 
-    public void click() {
+    public void click() throws IOException {
         isClicked = !isClicked;
     }
 
-    public void draw() {
+    public void draw() throws IOException {
         screen.fillRect(x, y, width, height, color);
     }
 }

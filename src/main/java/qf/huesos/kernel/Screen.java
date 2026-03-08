@@ -36,6 +36,7 @@ public class Screen extends JFrame {
     public final int COLOR_RED = 0xFF0000;
     public final int COLOR_GREEN = 0x00FF00;
     public final int COLOR_BLUE = 0x0000FF;
+    public final int COLOR_YELLOW = 0xFFF70;
 
     public Screen(int width, int height) {
         this.width = width;

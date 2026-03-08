@@ -6,6 +6,7 @@ import qf.huesos.kernel.graphics.TUI.TUIElement;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +43,11 @@ public class TerminalUserInterface implements KeyListener{
                 cursor.setPosition(cursorX, cursorY);
                 input();
                 update();
-                draw();
+                try {
+                    draw();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 try {
                     Thread.sleep(16); // ~60 FPS
                 } catch (InterruptedException e) {
@@ -55,18 +60,21 @@ public class TerminalUserInterface implements KeyListener{
     public void update() {}
     public void input() {}
 
-    private void draw() {
+    private void draw() throws IOException {
         screen.clear(BG_COLOR);
 
-        for (TUIElement TUIElement : TUIElements) {
-            TUIElement.draw();
+        for (TUIElement element : TUIElements) {
+            if (element == cursor) continue;
+            element.draw();
 
-            if (cursor.overlaps(TUIElement)) {
-                TUIElement.hover();
+            if (cursor.overlaps(element)) {
+                element.hover();
             } else {
-                TUIElement.unHover();
+                element.unHover();
             }
         }
+
+        cursor.draw();
     }
 
     public void add(TUIElement TUIElement) {
@@ -93,7 +101,11 @@ public class TerminalUserInterface implements KeyListener{
             case KeyEvent.VK_ENTER -> {
                 for (TUIElement TUIElement : TUIElements) {
                     if (cursor.overlaps(TUIElement)) {
-                        TUIElement.click();
+                        try {
+                            TUIElement.click();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 }
             }
