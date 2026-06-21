@@ -1,0 +1,144 @@
+#type:htui
+#version:1
+Rectangle {
+    id: top_panel
+    x: 0
+    y: 0
+    width: 800
+    height: 24
+    color: 0x363636
+}
+Rectangle {
+    id: left_panel
+    x: 0
+    y: 24
+    width: 220
+    height: 616
+    color: 0x3d3d3d
+}
+SelectMenu {
+    id: file_menu
+    text: "File"
+    text-color: 0xFFFFFF
+    x: 0
+    y: 0
+    width: 64
+    height: 24
+    color: 0x525252
+}
+
+Button {
+    id: file_button_open
+    text: "Open"
+    text-color: 0xFFFFFF
+    x: 4
+    y: 26
+    width: 120
+    height: 24
+    color: 0x727272
+}
+Button {
+    id: file_button_close
+    text: "Close"
+    text-color: 0xFFFFFF
+    x: 4
+    y: 62
+    width: 120
+    height: 24
+    color: 0x727272
+}
+Button {
+    id: file_button_save
+    text: "Save"
+    text-color: 0xFFFFFF
+    x: 4
+    y: 98
+    width: 120
+    height: 24
+    color: 0x727272
+}
+Button {
+    id: file_button_save_as
+    text: "Save as"
+    text-color: 0xFFFFFF
+    x: 4
+    y: 138
+    width: 120
+    height: 24
+    color: 0x727272
+}
+
+Button {
+    id: file_button_exit
+    text: "Exit"
+    text-color: 0xFFFFFF
+    x: 4
+    y: 178
+    width: 120
+    height: 24
+    color: 0x727272
+}
+
+
+
+SelectMenu {
+    id: options_menu
+    text: "Help"
+    text-color: 0xFFFFFF
+    x: 66
+    y: 0
+    width: 64
+    height: 24
+    color: 0x525252
+}
+Button {
+    id: help_button_help
+    text: "Help"
+    text-color: 0xFFFFFF
+    x: 66
+    y: 26
+    width: 120
+    height: 24
+    color: 0x727272
+}
+
+Label {
+    id: path_label
+    text: "Path"
+    color: 0xD8D8D8
+    x: 232
+    y: 32
+    width: 40
+    height: 18
+}
+
+TextField {
+    id: path_field
+    color: 0x1E1E1E
+    text-color: 0xFFFFFF
+    single-line: true
+    x: 276
+    y: 30
+    width: 500
+    height: 22
+}
+
+Label {
+    id: status_label
+    text: "Ready"
+    color: 0xD8D8D8
+    x: 232
+    y: 592
+    width: 540
+    height: 18
+}
+
+TextField {
+    id: editor_field
+    color: 0x262626
+    text-color: 0xFFFFFF
+    x: 232
+    y: 64
+    width: 544
+    height: 516
+}

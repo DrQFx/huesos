@@ -8,7 +8,7 @@ public class Button extends TUIElement {
     public Action onClick;
 
     private String text;
-    private int textColor;
+    private int textColor = 0xFFFFFF;
 
     public Button(Screen screen) {
         super(screen);
@@ -28,7 +28,7 @@ public class Button extends TUIElement {
     }
 
     @Override
-    public void click() throws IOException {
+    public void click() throws Exception {
         if (onClick != null) {
             onClick.run();
         }
@@ -36,6 +36,8 @@ public class Button extends TUIElement {
 
     @Override
     public void draw() {
+        if (!visible) return;
+
         if (isHovered) {
             screen.fillRect(x, y, width, height, rgbHover);
         } else if (isClicked) {

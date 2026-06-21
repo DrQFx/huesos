@@ -1,158 +1,247 @@
+#type:htui
+#version:1
+Rectangle {
+    id: panel
+    x: 196
+    y: 72
+    width: 408
+    height: 496
+    color: 0x202020
+}
+
 Label {
     id: greeting
-    text: "Calculator v0.1"
+    text: "Calculator"
     x: 320
-    y: 0
+    y: 92
     color: 0xFFFFFF
 }
 
 Label {
     id: result
     text: "0"
-    x: 320
-    y: 128
+    x: 236
+    y: 144
     color: 0xFFFFFF
+}
+
+Button {
+    id: clear
+    text: "C"
+    text-color: 0xFFFFFF
+    x: 236
+    y: 196
+    width: 76
+    height: 56
+    color: 0x7A4D4D
+    hover: 0x955F5F
+    click-color: 0xB66F6F
+}
+
+Button {
+    id: exit
+    text: "Exit"
+    text-color: 0xFFFFFF
+    x: 320
+    y: 196
+    width: 76
+    height: 56
+    color: 0x4D4D4D
+    hover: 0x646464
+    click-color: 0x808080
+}
+
+Button {
+    id: act_divide
+    text: "/"
+    text-color: 0xFFFFFF
+    x: 404
+    y: 196
+    width: 76
+    height: 56
+    color: 0x4D617A
+    hover: 0x617894
+    click-color: 0x7893B4
+}
+
+Button {
+    id: act_multiply
+    text: "*"
+    text-color: 0xFFFFFF
+    x: 488
+    y: 196
+    width: 76
+    height: 56
+    color: 0x4D617A
+    hover: 0x617894
+    click-color: 0x7893B4
+}
+
+Button {
+    id: num_7
+    text: "7"
+    text-color: 0xFFFFFF
+    x: 236
+    y: 260
+    width: 76
+    height: 56
+    color: 0x5C5C5C
+    hover: 0x787878
+    click-color: 0x9C9C9C
+}
+
+Button {
+    id: num_8
+    text: "8"
+    text-color: 0xFFFFFF
+    x: 320
+    y: 260
+    width: 76
+    height: 56
+    color: 0x5C5C5C
+    hover: 0x787878
+    click-color: 0x9C9C9C
+}
+
+Button {
+    id: num_9
+    text: "9"
+    text-color: 0xFFFFFF
+    x: 404
+    y: 260
+    width: 76
+    height: 56
+    color: 0x5C5C5C
+    hover: 0x787878
+    click-color: 0x9C9C9C
+}
+
+Button {
+    id: act_minus
+    text: "-"
+    text-color: 0xFFFFFF
+    x: 488
+    y: 260
+    width: 76
+    height: 56
+    color: 0x4D617A
+    hover: 0x617894
+    click-color: 0x7893B4
+}
+
+Button {
+    id: num_4
+    text: "4"
+    text-color: 0xFFFFFF
+    x: 236
+    y: 324
+    width: 76
+    height: 56
+    color: 0x5C5C5C
+    hover: 0x787878
+    click-color: 0x9C9C9C
+}
+
+Button {
+    id: num_5
+    text: "5"
+    text-color: 0xFFFFFF
+    x: 320
+    y: 324
+    width: 76
+    height: 56
+    color: 0x5C5C5C
+    hover: 0x787878
+    click-color: 0x9C9C9C
+}
+
+Button {
+    id: num_6
+    text: "6"
+    text-color: 0xFFFFFF
+    x: 404
+    y: 324
+    width: 76
+    height: 56
+    color: 0x5C5C5C
+    hover: 0x787878
+    click-color: 0x9C9C9C
+}
+
+Button {
+    id: act_plus
+    text: "+"
+    text-color: 0xFFFFFF
+    x: 488
+    y: 324
+    width: 76
+    height: 120
+    color: 0x4D617A
+    hover: 0x617894
+    click-color: 0x7893B4
+}
+
+Button {
+    id: num_1
+    text: "1"
+    text-color: 0xFFFFFF
+    x: 236
+    y: 388
+    width: 76
+    height: 56
+    color: 0x5C5C5C
+    hover: 0x787878
+    click-color: 0x9C9C9C
+}
+
+Button {
+    id: num_2
+    text: "2"
+    text-color: 0xFFFFFF
+    x: 320
+    y: 388
+    width: 76
+    height: 56
+    color: 0x5C5C5C
+    hover: 0x787878
+    click-color: 0x9C9C9C
+}
+
+Button {
+    id: num_3
+    text: "3"
+    text-color: 0xFFFFFF
+    x: 404
+    y: 388
+    width: 76
+    height: 56
+    color: 0x5C5C5C
+    hover: 0x787878
+    click-color: 0x9C9C9C
 }
 
 Button {
     id: num_0
     text: "0"
-    x: 208
-    y: 500
-    width: 64
-    height: 64
-    color: 0x5c5c5c
+    text-color: 0xFFFFFF
+    x: 236
+    y: 452
+    width: 160
+    height: 56
+    color: 0x5C5C5C
     hover: 0x787878
-    click-color: 0x9c9c9c
-}
-
-Button {
-    id: num_1
-    x: 276
-    y: 500
-    width: 64
-    height: 64
-    color: 0x5c5c5c
-    hover: 0x787878
-    click-color: 0x9c9c9c
-}
-
-Button {
-    id: num_2
-    x: 344
-    y: 500
-    width: 64
-    height: 64
-    color: 0x5c5c5c
-    hover: 0x787878
-    click-color: 0x9c9c9c
+    click-color: 0x9C9C9C
 }
 
 Button {
     id: equal
-    x: 412
-    y: 436
-    width: 64
-    height: 128
-    color: 0x5c5c5c
-    hover: 0x787878
-    click-color: 0x9c9c9c
-}
-
-Button {
-    id: num_3
-    x: 208
-    y: 434
-    width: 64
-    height: 64
-    color: 0x5c5c5c
-    hover: 0x787878
-    click-color: 0x9c9c9c
-}
-
-Button {
-    id: num_4
-    x: 276
-    y: 434
-    width: 64
-    height: 64
-    color: 0x5c5c5c
-    hover: 0x787878
-    click-color: 0x9c9c9c
-}
-
-Button {
-    id: num_5
-    x: 344
-    y: 434
-    width: 64
-    height: 64
-    color: 0x5c5c5c
-    hover: 0x787878
-    click-color: 0x9c9c9c
-}
-
-Button {
-    id: num_6
-    x: 208
-    y: 368
-    width: 64
-    height: 64
-    color: 0x5c5c5c
-    hover: 0x787878
-    click-color: 0x9c9c9c
-}
-
-Button {
-    id: num_7
-    x: 276
-    y: 368
-    width: 64
-    height: 64
-    color: 0x5c5c5c
-    hover: 0x787878
-    click-color: 0x9c9c9c
-}
-
-Button {
-    id: num_8
-    x: 344
-    y: 368
-    width: 64
-    height: 64
-    color: 0x5c5c5c
-    hover: 0x787878
-    click-color: 0x9c9c9c
-}
-Button {
-    id: num_9
-    x: 344
-    y: 300
-    width: 64
-    height: 64
-    color: 0x5c5c5c
-    hover: 0x787878
-    click-color: 0x9c9c9c
-}
-
-Button {
-    id: act_plus
-    x: 412
-    y: 368
-    width: 64
-    height: 64
-    color: 0x5c5c5c
-    hover: 0x787878
-    click-color: 0x9c9c9c
-}
-
-Button {
-    id: act_minus
-    x: 208
-    y: 300
-    width: 64
-    height: 64
-    color: 0x5c5c5c
-    hover: 0x787878
-    click-color: 0x9c9c9c
+    text: "="
+    text-color: 0xFFFFFF
+    x: 404
+    y: 452
+    width: 160
+    height: 56
+    color: 0x4D7A5A
+    hover: 0x60966F
+    click-color: 0x75B486
 }

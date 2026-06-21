@@ -1,0 +1,11 @@
+#type:htui
+#version:1
+
+Rectangle {
+    id: bg
+    x: 0
+    y: 0
+    width: 800
+    height: 640
+    color: 0x202020
+}

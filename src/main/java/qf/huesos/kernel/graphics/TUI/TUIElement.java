@@ -19,6 +19,7 @@ public class TUIElement {
 
     boolean isHovered = false;
     public boolean isClicked = false;
+    public boolean visible = true;
 
     public TUIElement(Screen screen) {
         this.screen = screen;
@@ -63,7 +64,7 @@ public class TUIElement {
         isHovered = false;
     }
 
-    public void click() throws IOException {
+    public void click() throws Exception {
         isClicked = !isClicked;
     }
 

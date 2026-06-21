@@ -16,6 +16,14 @@ public class SysCall {
         Kernel.screen.fillRect(x, y, w, h, color);
     }
 
+    // Scheduler
+    public void killCurrentProcess() {
+        Kernel.getInstance().getScheduler().killCurrentProcess();
+    }
+    public void killProcess(long pid) {
+        Kernel.getInstance().getScheduler().killProcess(pid);
+    }
+
     // Files
     public void newFile(String name) {
         Kernel.getInstance().getFilesystem().newFile(name);
@@ -49,5 +57,14 @@ public class SysCall {
     }
     public String getDirectory() {
         return Kernel.getInstance().getFilesystem().getDirectory();
+    }
+    public void deleteFile(String path) throws IOException {
+        Kernel.getInstance().getFilesystem().deleteFile(path);
+    }
+    public void moveFile(String path, String target) throws IOException {
+        Kernel.getInstance().getFilesystem().moveFile(path, target);
+    }
+    public void copyFile(String path, String target) throws IOException {
+        Kernel.getInstance().getFilesystem().copyFile(path, target);
     }
 }

@@ -1,0 +1,6 @@
+.data
+text: .string "Hello"
+
+.code
+    PUSH text
+    SYSCALL 2

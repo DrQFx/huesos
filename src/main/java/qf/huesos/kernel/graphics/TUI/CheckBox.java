@@ -12,7 +12,7 @@ public class CheckBox extends TUIElement {
         super(screen);
     }
 
-    public void click() throws IOException {
+    public void click() throws Exception {
         isClicked = !isClicked;
 
         if (onClick != null) {

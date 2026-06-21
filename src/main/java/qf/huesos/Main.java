@@ -4,7 +4,7 @@ package qf.huesos;
 import qf.huesos.boot.Bootloader;
 
 public class Main {
-    static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Bootloader boot = new Bootloader();
         boot.init();
     }

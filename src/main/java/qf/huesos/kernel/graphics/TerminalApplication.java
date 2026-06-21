@@ -28,6 +28,8 @@ public class TerminalApplication extends TerminalUserInterface {
                 continue;
             }
 
+            if (line.startsWith("#")) continue;
+
             if (line.endsWith("{")) {
                 String type = line.replace("{", "").trim();
 
@@ -36,6 +38,9 @@ public class TerminalApplication extends TerminalUserInterface {
                     case "Label" -> new Label(screen);
                     case "Checkbox" -> new CheckBox(screen);
                     case "Rectangle" -> new Rectangle(screen);
+                    case "SelectMenu" -> new SelectMenu(screen);
+                    case "TextField" -> new TextField(screen);
+                    case "Canvas" -> new Canvas(screen);
                     default -> throw new RuntimeException("Unknown UI type: " + type);
                 };
 
@@ -43,8 +48,13 @@ public class TerminalApplication extends TerminalUserInterface {
             }
 
             if (line.equals("}")) {
-                add(current);
-                current = null;
+                if (current != null) {
+                    if (current.id == null) {
+                        throw new Exception("Element without id");
+                    }
+                    add(current);
+                    current = null;
+                }
                 continue;
             }
 
@@ -63,7 +73,7 @@ public class TerminalApplication extends TerminalUserInterface {
         super.start();
     }
 
-    protected void onUiLoaded() throws IOException {}
+    protected void onUiLoaded() throws Exception {}
 
     void applyProperty(TUIElement element, String key, String value) throws Exception {
         switch (key) {
@@ -75,10 +85,15 @@ public class TerminalApplication extends TerminalUserInterface {
             case "text-color" -> {
                 if (element instanceof Button) {
                     ((Button) element).setTextColor(parseColor(value));
+                } else if (element instanceof SelectMenu) {
+                    ((SelectMenu) element).setTextColor(parseColor(value));
+                } else if (element instanceof TextField) {
+                    ((TextField) element).setTextColor(parseColor(value));
                 } else {
-                    throw new Exception("The element is not a button");
+                    throw new Exception("The element does not support text color");
                 }
             }
+
             case "id" -> {
                 element.id = value;
                 TUIElementsByID.put(element.id, element);
@@ -91,6 +106,7 @@ public class TerminalApplication extends TerminalUserInterface {
                     throw new Exception("The element is not a button");
                 }
             }
+
             case "click-color" -> {
                 if (element instanceof Button) {
                     element.rgbClick = parseColor(value);
@@ -99,19 +115,40 @@ public class TerminalApplication extends TerminalUserInterface {
                 }
             }
 
+            case "opened-width" -> {
+                if (element instanceof SelectMenu) {
+                    ((SelectMenu) element).setOpenedWidth(Integer.parseInt(value));
+                } else {
+                    throw new Exception("The element is not a button");
+                }
+            }
+
+            case "opened-height" -> {
+                if (element instanceof SelectMenu) {
+                    ((SelectMenu) element).setOpenedHeight(Integer.parseInt(value));;
+                } else {
+                    throw new Exception("The element is not a button");
+                }
+            }
+
             case "text" -> {
                 if (element instanceof Label label) label.text = value;
                 if (element instanceof Button button) button.setText(value);
+                if (element instanceof SelectMenu selectMenu) selectMenu.setText(value);
             }
 
             case "checked" -> {
                 if (element instanceof CheckBox checkBox)
                     checkBox.isClicked = Boolean.parseBoolean(value);
             }
-        }
 
-        if (element.id == null) {
-            throw new Exception("Element without id");
+            case "single-line" -> {
+                if (element instanceof TextField textField) {
+                    textField.setSingleLine(Boolean.parseBoolean(value));
+                } else {
+                    throw new Exception("The element is not a text field");
+                }
+            }
         }
     }
 

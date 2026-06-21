@@ -66,3 +66,11 @@ Label {
     x: 264
     y: 600
 }
+
+Label {
+    id: status_label
+    text: "Ready"
+    color: 0xFFFFFF
+    x: 264
+    y: 560
+}

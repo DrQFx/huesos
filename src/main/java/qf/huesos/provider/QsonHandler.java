@@ -14,7 +14,7 @@ public class QsonHandler {
 
     }
 
-    public Map<String, String> parse(String path) {
+    public Map<String, String> parse(String path) throws Exception {
         Map<String, String> result = new HashMap<>();
         List<String> lines = call.parseFile(path);
 
@@ -28,7 +28,7 @@ public class QsonHandler {
         return result;
     }
 
-    public String parseStatement(String path, String key) {
+    public String parseStatement(String path, String key) throws Exception {
         List<String> lines = call.parseFile(path);
 
         for (String line : lines) {
@@ -42,7 +42,7 @@ public class QsonHandler {
         return null;
     }
 
-    public void writeStatement(String path, String key, String value) throws IOException {
+    public void writeStatement(String path, String key, String value) throws Exception {
         List<String> lines = call.parseFile(path);
         boolean found = false;
 

@@ -1,0 +1,258 @@
+#type:htui
+#version:1
+Rectangle {
+    id: top_panel
+    x: 0
+    y: 0
+    width: 800
+    height: 24
+    color: 0x363636
+}
+
+Rectangle {
+    id: side_panel
+    x: 0
+    y: 24
+    width: 132
+    height: 616
+    color: 0x303030
+}
+
+SelectMenu {
+    id: file_menu
+    text: "File"
+    text-color: 0xFFFFFF
+    x: 0
+    y: 0
+    width: 64
+    height: 24
+    color: 0x525252
+}
+
+Button {
+    id: file_button_open
+    text: "Reload"
+    text-color: 0xFFFFFF
+    x: 4
+    y: 30
+    width: 120
+    height: 24
+    color: 0x727272
+    hover: 0x767676
+}
+
+Button {
+    id: file_button_save
+    text: "Save"
+    text-color: 0xFFFFFF
+    x: 4
+    y: 62
+    width: 120
+    height: 24
+    color: 0x727272
+    hover: 0x767676
+}
+
+Button {
+    id: file_button_save_as
+    text: "Save as"
+    text-color: 0xFFFFFF
+    x: 4
+    y: 94
+    width: 120
+    height: 24
+    color: 0x727272
+    hover: 0x767676
+}
+
+Button {
+    id: file_button_close
+    text: "Clear"
+    text-color: 0xFFFFFF
+    x: 4
+    y: 126
+    width: 120
+    height: 24
+    color: 0x727272
+    hover: 0x767676
+}
+
+Button {
+    id: file_button_exit
+    text: "Exit"
+    text-color: 0xFFFFFF
+    x: 4
+    y: 158
+    width: 120
+    height: 24
+    color: 0x727272
+    hover: 0x767676
+}
+
+SelectMenu {
+    id: options_menu
+    text: "Help"
+    text-color: 0xFFFFFF
+    x: 66
+    y: 0
+    width: 64
+    height: 24
+    color: 0x525252
+}
+
+Button {
+    id: help_button_help
+    text: "Help"
+    text-color: 0xFFFFFF
+    x: 4
+    y: 190
+    width: 120
+    height: 24
+    color: 0x727272
+    hover: 0x767676
+}
+
+Label {
+    id: title_label
+    text: "Image Editor"
+    color: 0xFFFFFF
+    x: 148
+    y: 2
+    width: 180
+    height: 20
+}
+
+Label {
+    id: path_label
+    text: "Path"
+    color: 0xD8D8D8
+    x: 148
+    y: 28
+    width: 40
+    height: 20
+}
+
+TextField {
+    id: path_field
+    color: 0x1E1E1E
+    text-color: 0xFFFFFF
+    single-line: true
+    x: 196
+    y: 28
+    width: 464
+    height: 22
+}
+
+Label {
+    id: file_label
+    text: "fs/test.img"
+    color: 0xD8D8D8
+    x: 668
+    y: 28
+    width: 600
+    height: 20
+}
+
+Label {
+    id: tool_label
+    text: "Tool: brush"
+    color: 0xD8D8D8
+    x: 148
+    y: 52
+    width: 240
+    height: 20
+}
+
+Label {
+    id: status_label
+    text: "Move cursor to canvas and press Enter to paint"
+    color: 0xD8D8D8
+    x: 148
+    y: 596
+    width: 600
+    height: 20
+}
+
+Button {
+    id: tool_brush
+    text: "Brush"
+    text-color: 0xFFFFFF
+    x: 8
+    y: 220
+    width: 92
+    height: 24
+    color: 0x535353
+    hover: 0x676767
+}
+
+Button {
+    id: tool_erase
+    text: "Erase"
+    text-color: 0xFFFFFF
+    x: 8
+    y: 250
+    width: 92
+    height: 24
+    color: 0x535353
+    hover: 0x676767
+}
+
+Button {
+    id: color_black
+    text: "Black"
+    text-color: 0xFFFFFF
+    x: 8
+    y: 300
+    width: 92
+    height: 24
+    color: 0x111111
+    hover: 0x333333
+}
+
+Button {
+    id: color_white
+    text: "White"
+    text-color: 0x000000
+    x: 8
+    y: 330
+    width: 92
+    height: 24
+    color: 0xEEEEEE
+    hover: 0xFFFFFF
+}
+
+Button {
+    id: color_red
+    text: "Red"
+    text-color: 0xFFFFFF
+    x: 8
+    y: 360
+    width: 92
+    height: 24
+    color: 0xB33939
+    hover: 0xD64545
+}
+
+Button {
+    id: color_green
+    text: "Green"
+    text-color: 0xFFFFFF
+    x: 8
+    y: 390
+    width: 92
+    height: 24
+    color: 0x2E8B57
+    hover: 0x3FAA6A
+}
+
+Button {
+    id: color_blue
+    text: "Blue"
+    text-color: 0xFFFFFF
+    x: 8
+    y: 420
+    width: 92
+    height: 24
+    color: 0x3267B8
+    hover: 0x497FD3
+}

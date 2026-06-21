@@ -4,5 +4,5 @@ import java.io.IOException;
 
 @FunctionalInterface
 public interface Action {
-    void run() throws IOException;
+    void run() throws Exception;
 }
