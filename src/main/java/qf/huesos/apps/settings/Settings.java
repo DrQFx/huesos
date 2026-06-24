@@ -1,5 +1,6 @@
 package qf.huesos.apps;
 
+import qf.huesos.kernel.graphics.TUI.TextField;
 import qf.huesos.kernel.scheduler.Process;
 import qf.huesos.kernel.scheduler.RunnableApplication;
 import qf.huesos.kernel.Screen;
@@ -8,9 +9,9 @@ import qf.huesos.kernel.graphics.TUI.Button;
 import qf.huesos.kernel.graphics.TUI.CheckBox;
 import qf.huesos.kernel.graphics.TUI.Label;
 import qf.huesos.kernel.graphics.TerminalApplication;
-import qf.huesos.provider.QsonHandler;
+import qf.huesos.kernel.provider.QsonHandler;
 
-import java.io.IOException;
+import java.util.List;
 
 public class Settings extends TerminalApplication implements RunnableApplication {
 
@@ -25,6 +26,8 @@ public class Settings extends TerminalApplication implements RunnableApplication
     private long PROCESS_ID;
     private Label statusLabel;
 
+    public int terminalColor;
+
     public Settings(Screen screen) throws Exception {
         super(screen);
         setPath(path);
@@ -36,16 +39,23 @@ public class Settings extends TerminalApplication implements RunnableApplication
     @Override
     protected void onUiLoaded() throws Exception {
         statusLabel = (Label) TUIElementsByID.get("status_label");
+
         bindButtons();
         parseSettings();
         bindUiLogic();
     }
 
     private void parseSettings() throws Exception {
-        String value = qson.parseStatement(settingsPath, "test");
+        String testValue = qson.parseStatement(settingsPath, "test");
+        String terminalColor = (qson.parseStatement(settingsPath, "terminal_color"));
 
         CheckBox box = (CheckBox) TUIElementsByID.get("test_box");
-        box.isClicked = "true".equals(value);
+        box.isClicked = "true".equals(testValue);
+
+        TextField terminalColorField = (TextField) TUIElementsByID.get("terminal_color");
+        terminalColorField.setLines(List.of(terminalColor));
+
+        changeTerminalColor(terminalColorField);
     }
 
     private void bindUiLogic() {
@@ -76,6 +86,30 @@ public class Settings extends TerminalApplication implements RunnableApplication
     private void setStatus(String message) {
         if (statusLabel != null) {
             statusLabel.setText(message);
+        }
+    }
+
+    private void changeTerminalColor(TextField terminalColorField) {
+        try {
+            String text = terminalColorField.getLines().getFirst().trim();
+
+            int color;
+
+            if (text.startsWith("0x")) {
+                text = text.substring(1);
+            }
+
+            color = Integer.parseInt(text, 16);
+
+            qson.writeStatement(settingsPath, "terminal_color", text);
+
+            setBgColor(color);
+            setStatus("Terminal color changed");
+
+        } catch (NumberFormatException e) {
+            setStatus("Invalid color. Example: 121212");
+        } catch (Exception e) {
+            setStatus("Cannot save color: " + e.getMessage());
         }
     }
 
