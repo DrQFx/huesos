@@ -1,6 +1,8 @@
 package qf.huesos.kernel;
 
 import qf.huesos.apps.Terminal;
+import qf.huesos.apps.settings.Settings;
+import qf.huesos.apps.settings.SystemSettings;
 import qf.huesos.kernel.scheduler.Process;
 import qf.huesos.kernel.scheduler.RunnableApplication;
 import qf.huesos.kernel.scheduler.Scheduler;
@@ -9,6 +11,7 @@ public class Kernel {
     private static Kernel instance;
     private final Scheduler scheduler;
     private final Filesystem filesystem;
+    private final SystemSettings settings;
     public Terminal terminal;
 
     public static final Screen screen = new Screen(800, 640);
@@ -22,6 +25,9 @@ public class Kernel {
         filesystem = new Filesystem("fs");
         scheduler = new Scheduler(this, screen);
         scheduler.start();
+
+        settings = new SystemSettings();
+        settings.loadSettings();
 
         terminal = new Terminal(screen);
         runApplication(terminal);
@@ -40,6 +46,10 @@ public class Kernel {
 
     public Scheduler getScheduler() {
         return scheduler;
+    }
+
+    public SystemSettings getSettings() {
+        return settings;
     }
 
     public long runApplication(RunnableApplication app) {

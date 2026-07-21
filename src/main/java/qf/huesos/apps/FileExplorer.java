@@ -12,10 +12,10 @@ import java.io.File;
 
 public class FileExplorer extends TerminalApplication implements RunnableApplication {
 
-    private final String pathToUI = "fs/system/apps/explorer/main.htui";
+    private final String pathToUI = "fs/system/apps/explorer/general.htui";
     private final int bg = 0x202020;
 
-    private String currentPath = "fs"; // стартовая директория
+    private String currentPath = "fs";
 
     private NSFW fs = new NSFW();
     private final SysCall call = new SysCall();
@@ -40,7 +40,6 @@ public class FileExplorer extends TerminalApplication implements RunnableApplica
         TUIElements.removeIf(e -> !(e instanceof Cursor));
         TUIElementsByID.clear();
 
-        // label пути
         Label pathLabel = new Label(screen);
         pathLabel.id = "path_label";
         pathLabel.x = 10;
@@ -49,7 +48,6 @@ public class FileExplorer extends TerminalApplication implements RunnableApplica
         pathLabel.text = currentPath;
         add(pathLabel);
 
-        // кнопка назад
         Button back = new Button(screen);
         back.id = "back_btn";
         back.setText("..");
@@ -75,7 +73,6 @@ public class FileExplorer extends TerminalApplication implements RunnableApplica
 
         add(back);
 
-        // список файлов
         File dir = new File(currentPath);
         File[] files = dir.listFiles();
 

@@ -15,7 +15,7 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 
 public class TextEditor extends TerminalApplication implements RunnableApplication {
-    private final String path = "fs/system/apps/ted/main.htui";
+    private final String path = "fs/system/apps/ted/general.htui";
     private final int bg = 0x262626;
 
     private long PROCESS_ID;

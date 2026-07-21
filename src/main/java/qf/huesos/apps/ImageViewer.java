@@ -23,7 +23,7 @@ public class ImageViewer extends TerminalApplication implements RunnableApplicat
     private static final int CELL_SIZE = 16;
     private static final int EMPTY = -1;
 
-    private final String uiPath = "fs/system/apps/imviewer/main.htui";
+    private final String uiPath = "fs/system/apps/imviewer/general.htui";
     private final int bg = 0x202020;
     private final SysCall call = new SysCall();
     private final int[][] pixels = new int[IMAGE_HEIGHT][IMAGE_WIDTH];

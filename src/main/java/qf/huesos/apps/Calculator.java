@@ -10,7 +10,7 @@ import qf.huesos.kernel.graphics.TerminalApplication;
 
 public class Calculator extends TerminalApplication implements RunnableApplication {
     private final int bg = screen.COLOR_BLACK;
-    private final String path = "fs/system/apps/calculator/main.htui";
+    private final String path = "fs/system/apps/calculator/general.htui";
 
     private int result;
     private CalculatorModel calc = new CalculatorModel();

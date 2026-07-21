@@ -1,6 +1,7 @@
 package qf.huesos.kernel;
 
 import qf.huesos.apps.Terminal;
+import qf.huesos.kernel.scheduler.RunnableApplication;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,9 +10,13 @@ import java.util.List;
 public class SysCall {
 
     // General
+    public void runApplication(RunnableApplication runnableApplication) {
+        Kernel.getInstance().runApplication(runnableApplication);
+    }
     public void print(String text, int color) {
         Kernel.getInstance().terminal.println(text, color);
     }
+    public String input() { return Kernel.getInstance().terminal.input(); }
     public void fillRectangle(int x, int y, int w, int h, int color) {
         Kernel.screen.fillRect(x, y, w, h, color);
     }

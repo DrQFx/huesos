@@ -25,6 +25,9 @@ public class Canvas extends TUIElement{
     public TUIElement getElement(int id) {
         return elements.get(id);
     }
+    public List<TUIElement> getElements() {
+        return elements;
+    }
 
     @Override
     public void draw() throws IOException {

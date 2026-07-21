@@ -1,24 +1,23 @@
 package qf.huesos.apps;
 
+import qf.huesos.apps.settings.Settings;
+import qf.huesos.apps.settings.SystemSettings;
 import qf.huesos.kernel.Kernel;
 import qf.huesos.kernel.Screen;
 import qf.huesos.kernel.SysCall;
 import qf.huesos.kernel.scheduler.Process;
 import qf.huesos.kernel.scheduler.RunnableApplication;
-import qf.huesos.provider.RAHandler;
+import qf.huesos.kernel.provider.RAProvider;
 
 import java.io.File;
 import java.util.List;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
-import java.util.List;
 
 public class Terminal implements RunnableApplication, KeyListener {
     protected final Screen screen;
     protected SysCall call;
-    protected RAHandler ra = new RAHandler();
 
     protected int cursorX = 0;
     protected int cursorY = 0;
@@ -47,7 +46,7 @@ public class Terminal implements RunnableApplication, KeyListener {
     }
 
     public void start() {
-        screen.clear(screen.COLOR_BLACK);
+        screen.clear(Integer.decode(SystemSettings.TERMINAL_COLOR));
         cursorX = 0;
         cursorY = 0;
         commandInput.setLength(0);
@@ -55,6 +54,15 @@ public class Terminal implements RunnableApplication, KeyListener {
         println("Type 'help' for commands.", screen.COLOR_WHITE);
         print(PROMPT, screen.COLOR_WHITE);
         screen.repaintCanvas();
+    }
+
+    // not working yet
+    public String input() {
+        commandInput.setLength(0);
+        print(PROMPT, screen.COLOR_WHITE);
+        screen.repaintCanvas();
+
+        return commandInput.toString();
     }
 
     public void print(String text, int rgb) {
@@ -149,7 +157,7 @@ public class Terminal implements RunnableApplication, KeyListener {
                 break;
 
             case "clear":
-                screen.clear(screen.COLOR_BLACK);
+                screen.clear(Integer.decode(SystemSettings.TERMINAL_COLOR));
                 cursorX = 0;
                 cursorY = 0;
                 break;
@@ -258,12 +266,17 @@ public class Terminal implements RunnableApplication, KeyListener {
                 runApp(new ImageViewer(Kernel.screen, args));
                 break;
 
+            case "test":
+                new RAProvider("fs/user/testo.ra");
+                break;
+
             default:
                 if (isExecutable(cmd)) {
-                    ra.run(call.getDirectory() + "/" + cmd);
+                    call.runApplication(new RAProvider(cmd));
                 } else {
                     println("Unknown command: " + command, screen.COLOR_RED);
                 }
+                //println("Unknown command: " + command, screen.COLOR_RED);
         }
     }
 
@@ -368,7 +381,8 @@ public class Terminal implements RunnableApplication, KeyListener {
     }
 
     protected boolean isExecutable(String filename) throws Exception {
-        List<String> files = call.getAllFilesInDirectory();
+        File dir = new File(call.getDirectory());
+        List<String> files = call.getAllFilesInDirectory(dir);
 
         for (String file : files) {
             if (file.equals(filename)) {

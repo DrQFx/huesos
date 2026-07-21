@@ -1,6 +1,19 @@
-.data
-text: .string "Hello"
+.info
+    NAME : "Test App"
+    VERSION: "1.2"
 
-.code
-    PUSH text
-    SYSCALL 2
+.data
+    text : string "Hello"
+    sosat : int 16
+
+@run
+
+.main
+    PUSH sosat
+    ADD sosat, sosat
+    CALL : PRINT
+    .printeger
+
+.printeger
+    CALL PRINT text
+    GOTO .printeger

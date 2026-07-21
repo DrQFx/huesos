@@ -35,12 +35,11 @@ public class TerminalUserInterface implements KeyListener{
         cursor.setHeight(16);
 
         TUIElements.add(cursor);
-
-        screen.addInputListener(this);
     }
 
     public void start() throws Exception {
         running = true;
+        screen.addInputListener(this);
         new Thread(() -> {
             while (running) {
                 cursor.setPosition(cursorX, cursorY);
@@ -90,6 +89,11 @@ public class TerminalUserInterface implements KeyListener{
 
     public void add(TUIElement TUIElement) {
         TUIElements.add(TUIElement);
+    }
+    public void removeAll() {
+        TUIElements.clear();
+        TUIElementsByID.clear();
+        TUIElements.add(cursor);
     }
 
     public void setBgColor(int color) {

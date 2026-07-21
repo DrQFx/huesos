@@ -1,16 +1,14 @@
-package qf.huesos.provider;
+package qf.huesos.kernel.provider;
 
 import qf.huesos.kernel.SysCall;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class QsonHandler {
+public class QsonProvider {
     SysCall call = new SysCall();
-    public QsonHandler() {
+    public QsonProvider() {
 
     }
 

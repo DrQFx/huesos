@@ -1,5 +1,6 @@
-package qf.huesos.apps;
+package qf.huesos.apps.settings;
 
+import qf.huesos.kernel.Kernel;
 import qf.huesos.kernel.graphics.TUI.TextField;
 import qf.huesos.kernel.scheduler.Process;
 import qf.huesos.kernel.scheduler.RunnableApplication;
@@ -9,29 +10,38 @@ import qf.huesos.kernel.graphics.TUI.Button;
 import qf.huesos.kernel.graphics.TUI.CheckBox;
 import qf.huesos.kernel.graphics.TUI.Label;
 import qf.huesos.kernel.graphics.TerminalApplication;
-import qf.huesos.kernel.provider.QsonHandler;
+import qf.huesos.kernel.provider.QsonProvider;
 
 import java.util.List;
 
 public class Settings extends TerminalApplication implements RunnableApplication {
 
-    private final String path = "fs/system/apps/settings/main.htui";
+    SystemSettings settings = new SystemSettings();
+
+    private final String generalPath = "fs/system/apps/settings/general.htui";
+    private final String systemVariablesPath = "fs/system/apps/settings/sys_variables.htui";
+    private final String languagesPath = "fs/system/apps/settings/languages.htui";
     private final String settingsPath = "fs/system/sys/settings.qson";
     private final int bg = 0x121212;
 
-    private final QsonHandler qson = new QsonHandler();
+    private final QsonProvider qson = new QsonProvider();
     private final SysCall call = new SysCall();
 
     private String name;
     private long PROCESS_ID;
-    private Label statusLabel;
 
-    public int terminalColor;
+    private Label statusLabel;
+    private CheckBox test_box;
+    private TextField terminalColorField;
+    private Button category;
+
+    private String currentCategory;
 
     public Settings(Screen screen) throws Exception {
         super(screen);
-        setPath(path);
-        setBgColor(bg);
+        setPath(generalPath);
+        setBgColor(bg); 
+        currentCategory = "category_general";
         setName("Settings");
         start();
     }
@@ -41,31 +51,30 @@ public class Settings extends TerminalApplication implements RunnableApplication
         statusLabel = (Label) TUIElementsByID.get("status_label");
 
         bindButtons();
-        parseSettings();
         bindUiLogic();
     }
 
-    private void parseSettings() throws Exception {
-        String testValue = qson.parseStatement(settingsPath, "test");
-        String terminalColor = (qson.parseStatement(settingsPath, "terminal_color"));
-
-        CheckBox box = (CheckBox) TUIElementsByID.get("test_box");
-        box.isClicked = "true".equals(testValue);
-
-        TextField terminalColorField = (TextField) TUIElementsByID.get("terminal_color");
-        terminalColorField.setLines(List.of(terminalColor));
-
-        changeTerminalColor(terminalColorField);
-    }
-
     private void bindUiLogic() {
+        terminalColorField = (TextField) TUIElementsByID.get("terminal_color");
+        test_box = (CheckBox) TUIElementsByID.get("test_box");
 
-        CheckBox box = (CheckBox) TUIElementsByID.get("test_box");
+        category = (Button) TUIElementsByID.get(currentCategory);
 
-        box.onClick = () -> {
+        test_box.isClicked = "true".equals(SystemSettings.TEST_VALUE);
+
+        terminalColorField.setLines(List.of(SystemSettings.TERMINAL_COLOR));
+        terminalColorField.setTextColor(Kernel.screen.COLOR_WHITE);
+
+        if (category != (Button) TUIElementsByID.get(currentCategory)) {
+            category.setColor(0x4d4d4d);
+        } else {
+            category.setColor(0xadadad);
+        }
+
+        test_box.onClick = () -> {
             try {
-                qson.writeStatement(settingsPath, "test", box.isClicked ? "true" : "false");
-                setStatus("Saved: test = " + box.isClicked);
+                qson.writeStatement(settingsPath, "test", test_box.isClicked ? "true" : "false");
+                setStatus("Saved: test = " + test_box.isClicked);
             } catch (Exception e) {
                 setStatus("Cannot save settings: " + e.getMessage());
             }
@@ -73,8 +82,25 @@ public class Settings extends TerminalApplication implements RunnableApplication
     }
 
     private void bindButtons() {
+        ((Button) TUIElementsByID.get("apply_button")).onClick = () -> {
+            applySettings();
+            setStatus("Settings applied");
+        };
+
         ((Button) TUIElementsByID.get("category_general")).onClick = () -> {
+            currentCategory = "category_general";
+            changeCategory("category_general");
             setStatus("General settings selected");
+        };
+        ((Button) TUIElementsByID.get("category_system_variables")).onClick = () -> {
+            currentCategory = "category_system_variables";
+            changeCategory("category_system_variables");
+            setStatus("System Variables selected");
+        };
+        ((Button) TUIElementsByID.get("category_languages")).onClick = () -> {
+            currentCategory = "category_languages";
+            changeCategory("category_languages");
+            setStatus("Languages category selected");
         };
 
         ((Button) TUIElementsByID.get("exit_button")).onClick = () -> {
@@ -83,33 +109,41 @@ public class Settings extends TerminalApplication implements RunnableApplication
         };
     }
 
-    private void setStatus(String message) {
-        if (statusLabel != null) {
-            statusLabel.setText(message);
+    private void changeCategory(String category) throws Exception {
+        switch (category) {
+            case "category_general":
+                stop();
+                setPath(generalPath);
+                removeAll();
+                start();
+                break;
+            case "category_system_variables":
+                stop();
+                setPath(systemVariablesPath);
+                removeAll();
+                start();
+                break;
+            case "category_languages":
+                stop();
+                setPath(languagesPath);
+                removeAll();
+                start();
+                break;
+            default:
+                throw new Exception("Invalid category");
         }
     }
 
-    private void changeTerminalColor(TextField terminalColorField) {
-        try {
-            String text = terminalColorField.getLines().getFirst().trim();
+    private void applySettings() throws Exception {
+        qson.writeStatement(settingsPath, "terminal-color", terminalColorField.getText());
+        settings.loadSettings();
 
-            int color;
+        setStatus("Settings applied");
+    }
 
-            if (text.startsWith("0x")) {
-                text = text.substring(1);
-            }
-
-            color = Integer.parseInt(text, 16);
-
-            qson.writeStatement(settingsPath, "terminal_color", text);
-
-            setBgColor(color);
-            setStatus("Terminal color changed");
-
-        } catch (NumberFormatException e) {
-            setStatus("Invalid color. Example: 121212");
-        } catch (Exception e) {
-            setStatus("Cannot save color: " + e.getMessage());
+    private void setStatus(String message) {
+        if (statusLabel != null) {
+            statusLabel.setText(message);
         }
     }
 
