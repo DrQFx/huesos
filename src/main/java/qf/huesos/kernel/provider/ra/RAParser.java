@@ -58,13 +58,13 @@ public class RAParser {
     }
 
     private void parseInfoBlock() {
-        consume(); // Пропускаем .info
+        consume();
         while (peek() != null && !peek().trim().startsWith(".")) {
             String line = consume().trim();
-            if (line.isEmpty()) continue; // Пропуск пустых строк
+            if (line.isEmpty()) continue;
 
             String[] parts = line.split(":", 2);
-            if (parts.length != 2) continue; // Защита от OutOfBoundsException
+            if (parts.length != 2) continue;
 
             switch (parts[0].trim()) {
                 case "NAME":
@@ -78,10 +78,10 @@ public class RAParser {
     }
 
     private void parseDataBlock(List<Instruction> instructions) throws Exception {
-        consume(); // Пропускаем .data
+        consume();
         while (peek() != null && !peek().trim().startsWith(".")) {
             String line = consume().trim();
-            if (line.isEmpty()) continue; // Пропуск пустых строк
+            if (line.isEmpty()) continue;
 
             String[] leftRight = line.split("\\|", 2);
             if (leftRight.length != 2)
@@ -104,7 +104,6 @@ public class RAParser {
                 }
                 case "int" -> instructions.add(new Instruction(Opcode.VAR, Value.of(Value.Type.INT, Integer.parseInt(value)), Value.of(Value.Type.STR, name)));
 
-                // Исправлены парсеры для других числовых типов (не Integer, а Double, Long, Float)
                 case "double" -> instructions.add(new Instruction(Opcode.VAR, Value.of(Value.Type.DOUBLE, Double.parseDouble(value)), Value.of(Value.Type.STR, name)));
                 case "long" -> instructions.add(new Instruction(Opcode.VAR, Value.of(Value.Type.LONG, Long.parseLong(value)), Value.of(Value.Type.STR, name)));
                 case "float" -> instructions.add(new Instruction(Opcode.VAR, Value.of(Value.Type.FLOAT, Float.parseFloat(value)), Value.of(Value.Type.STR, name)));
@@ -117,26 +116,24 @@ public class RAParser {
     }
 
     private void parseCodeBlock(List<Instruction> instructions) throws Exception {
-        consume(); // Пропускаем .code
+        consume();
         while (peek() != null && !peek().trim().startsWith(".")) {
             String line = consume().trim();
-            if (line.isEmpty()) continue; // Защита от пустых строк
+            if (line.isEmpty()) continue;
 
             String[] parts = line.split("\\s+");
             String opcode = parts[0].trim();
 
-            // Обработка меток, которые могут быть как на отдельной строке, так и вместе с инструкцией
             if (opcode.endsWith(":")) {
                 String label = opcode.substring(0, opcode.length() - 1);
-                breakPoints.put(label, instructions.size()); // Теперь instructions.size() содержит правильный глобальный индекс
+                breakPoints.put(label, instructions.size());
                 if (label.equals("ENTRY")) {
                     ENTRY_POINT = instructions.size();
                 }
 
-                if (parts.length == 1) { // Метка была одна на строке
+                if (parts.length == 1) {
                     continue;
                 } else {
-                    // Инструкция идет после метки на той же строке
                     String[] newParts = new String[parts.length - 1];
                     System.arraycopy(parts, 1, newParts, 0, parts.length - 1);
                     parts = newParts;
