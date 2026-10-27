@@ -1,4 +1,4 @@
 #qson 1.0
-test=true
-terminal-color=adadadaaddadad
+test=false
+terminal-color=0x000000
 

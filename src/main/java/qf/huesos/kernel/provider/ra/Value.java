@@ -20,8 +20,16 @@ public final class Value {
         this.type = type;
         this.value = value;
     }
+    public Value(Type type) {
+        this.type = type;
+        this.value = null;
+    }
+
     public static Value of(Type type, Object object) {
         return new Value(type, object);
+    }
+    public static Value of(Type type) {
+        return new Value(type);
     }
 
     public Type getType() {

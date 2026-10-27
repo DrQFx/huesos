@@ -1,6 +1,7 @@
 package qf.huesos.kernel.provider.ra;
 
 public enum Opcode {
+    USE,
     PUSH,
     POP,
     ADD,
@@ -11,6 +12,9 @@ public enum Opcode {
     VAR,
     STORE,
     LOAD,
+    ARG,
+    LOADARG,
+    DB,
     SWAP, // поменять местами последние два значения стека
     DUP, // копировать
     OVER, // копировать верхнее значение через одно вниз

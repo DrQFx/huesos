@@ -121,6 +121,20 @@ public class NSFW {
         }
     }
 
+    public void writeToFile(String path, String data, int pos) throws IOException {
+        RandomAccessFile raf = new RandomAccessFile(path, "rw");
+
+        raf.seek(pos);
+        raf.writeBytes(data + System.lineSeparator());
+        raf.close();
+    }
+    public void writeToFile(String path, List<String> data, int pos) throws IOException {
+        for (String line : data) {
+            writeToFile(path, line, pos);
+            pos++;
+        }
+    }
+
     public void makeDirectory(String name) throws IOException {
         Path dir = Path.of(currentDirectory, name);
         Files.createDirectories(dir);
@@ -174,6 +188,15 @@ public class NSFW {
     }
     public void copyFile(String source, String target) throws IOException {
         Files.copy(Path.of(source), Path.of(target), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public boolean exist(String path) {
+        return Files.exists(Path.of(path));
+    }
+    public void createIfNotExist(String name, String path) {
+        if (!exist(path)) {
+            newFile(name, path);
+        }
     }
 
     // GENERAL

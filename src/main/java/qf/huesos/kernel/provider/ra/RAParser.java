@@ -39,8 +39,12 @@ public class RAParser {
                 consume();
                 continue;
             }
+            String[] parts = token.split("\\s+");
 
-            switch (token) {
+            switch (parts[0]) {
+                case "use":
+                    parseUse(instructions);
+                    break;
                 case ".info":
                     parseInfoBlock();
                     break;
@@ -55,6 +59,22 @@ public class RAParser {
             }
         }
         return instructions;
+    }
+
+    private void parseUse(List<Instruction> instructions) throws Exception {
+        String line = consume().trim();
+        String[] parts = line.split("\\s+");
+
+        if (parts.length < 2) {
+            throw new Exception("Invalid use syntax: " + line);
+        }
+
+        String lib = parts[1];
+        if (lib.startsWith("\"") && lib.endsWith("\"")) {
+            lib = lib.substring(1, lib.length() - 1);
+        }
+
+        instructions.add(new Instruction(Opcode.USE, Value.of(Value.Type.STR, lib)));
     }
 
     private void parseInfoBlock() {
@@ -92,26 +112,15 @@ public class RAParser {
                 throw new Exception("Missing : " + line);
 
             String name = nameType[0].trim();
-            String type = nameType[1].trim();
+            Value.Type type = resolveType(nameType[1].trim());
             String value = leftRight[1].trim();
 
-            switch (type) {
-                case "string" -> {
-                    if (value.startsWith("\"") && value.endsWith("\"")) {
-                        value = value.substring(1, value.length() - 1);
-                    }
-                    instructions.add(new Instruction(Opcode.VAR, Value.of(Value.Type.STR, value), Value.of(Value.Type.STR, name)));
+            if (type == Value.Type.STR) {
+                if (value.startsWith("\"") && value.endsWith("\"")) {
+                    value = value.substring(1, value.length() - 1);
                 }
-                case "int" -> instructions.add(new Instruction(Opcode.VAR, Value.of(Value.Type.INT, Integer.parseInt(value)), Value.of(Value.Type.STR, name)));
-
-                case "double" -> instructions.add(new Instruction(Opcode.VAR, Value.of(Value.Type.DOUBLE, Double.parseDouble(value)), Value.of(Value.Type.STR, name)));
-                case "long" -> instructions.add(new Instruction(Opcode.VAR, Value.of(Value.Type.LONG, Long.parseLong(value)), Value.of(Value.Type.STR, name)));
-                case "float" -> instructions.add(new Instruction(Opcode.VAR, Value.of(Value.Type.FLOAT, Float.parseFloat(value)), Value.of(Value.Type.STR, name)));
-
-                case "object" -> instructions.add(new Instruction(Opcode.VAR, Value.of(Value.Type.OBJ, Integer.parseInt(value)), Value.of(Value.Type.STR, name)));
-                case "bool" -> instructions.add(new Instruction(Opcode.VAR, Value.of(Value.Type.BOOL, Boolean.parseBoolean(value)), Value.of(Value.Type.STR, name)));
-                default -> throw new Exception("Unknown type: " + type);
             }
+            instructions.add(new Instruction(Opcode.VAR, new Value(type, value), new Value(Value.Type.STR, name)));
         }
     }
 
@@ -170,8 +179,63 @@ public class RAParser {
                     }
                 }
                 case "LOAD" -> {
-                    if (parts.length != 2) throw new Exception("The LOAD instruction requires an argument: " + line);
-                    instructions.add(new Instruction(Opcode.LOAD, parseValue(parts[1])));
+                    if (parts.length == 2) {
+                        instructions.add(new Instruction(Opcode.LOAD, parseValue(parts[1])));
+                    } else {
+                        instructions.add(new Instruction(Opcode.LOAD));
+                    }
+                }
+                case "ARG" -> {
+                    if (parts.length == 3) {
+                        instructions.add(new Instruction(Opcode.ARG, parseValue(parts[1]), parseValue(parts[2])));
+                    } else {
+                        throw new Exception("ARG requires at least one argument");
+                    }
+                }
+                case "LOADARG" -> {
+                    if (parts.length == 2) {
+                        instructions.add(new Instruction(Opcode.LOADARG, parseValue(parts[1])));
+                    } else {
+                        throw new Exception("LOADARG requires an argument");
+                    }
+                }
+                case "DB" -> {
+                    if (parts.length == 6) {
+                        String[] leftRight = line.split("\\|", 2);
+                        if (leftRight.length != 2)
+                            throw new Exception("Missing | : " + line);
+
+                        String[] nameType = leftRight[0].split(":", 2);
+                        if (nameType.length != 2)
+                            throw new Exception("Missing : " + line);
+
+                        String[] nameNoDB = nameType[0].trim().split("\\s+", 2);
+                        if (nameNoDB.length != 2)
+                            throw new Exception("Invalid DB usage");
+
+                        String name = nameNoDB[1].trim();
+                        Value.Type type = resolveType(nameType[1].trim());
+                        String value = leftRight[1].trim();
+
+                        if (type == Value.Type.STR) {
+                            if (value.startsWith("\"") && value.endsWith("\"")) {
+                                value = value.substring(1, value.length() - 1);
+                            }
+                        }
+
+                        instructions.add(new Instruction(Opcode.DB, Value.of(type, value), Value.of(Value.Type.STR, name)));
+                    } else if (parts.length == 5) {
+                        String[] nameType = line.split(":", 2);
+                        if (nameType.length !=2)
+                            throw new Exception("Invalid DB usage" + line);
+
+                        String name = nameType[0].trim();
+                        Value.Type type = resolveType(nameType[1].trim());
+
+                        instructions.add(new Instruction(Opcode.DB, Value.of(type), Value.of(Value.Type.STR, name)));
+                    } else {
+                        throw new Exception("Invalid DB usage " + line);
+                    }
                 }
                 case "SWAP" -> instructions.add(new Instruction(Opcode.SWAP));
                 case "DUP" -> instructions.add(new Instruction(Opcode.DUP));
@@ -199,6 +263,35 @@ public class RAParser {
                 case "HALT" -> instructions.add(new Instruction(Opcode.HALT));
                 default -> throw new Exception("Unknown instruction: " + opcode);
             }
+        }
+    }
+
+    private Value.Type resolveType(String type) throws Exception {
+        switch (type) {
+            case "string" -> {
+                return Value.Type.STR;
+            }
+            case "int" -> {
+                return Value.Type.INT;
+            }
+
+            case "double" -> {
+                return Value.Type.DOUBLE;
+            }
+            case "long" -> {
+                return Value.Type.LONG;
+            }
+            case "float" -> {
+                return Value.Type.FLOAT;
+            }
+
+            case "object" -> {
+                return Value.Type.OBJ;
+            }
+            case "bool" -> {
+                return Value.Type.BOOL;
+            }
+            default -> throw new Exception("Unknown type: " + type);
         }
     }
 

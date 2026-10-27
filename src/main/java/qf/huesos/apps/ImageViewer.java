@@ -8,6 +8,8 @@ import qf.huesos.kernel.graphics.TUI.SelectMenu;
 import qf.huesos.kernel.graphics.TUI.TUIElement;
 import qf.huesos.kernel.graphics.TUI.TextField;
 import qf.huesos.kernel.graphics.TerminalApplication;
+import qf.huesos.kernel.provider.ImageProvider;
+import qf.huesos.kernel.provider.image.Pixel;
 import qf.huesos.kernel.scheduler.Process;
 import qf.huesos.kernel.scheduler.RunnableApplication;
 
@@ -41,7 +43,7 @@ public class ImageViewer extends TerminalApplication implements RunnableApplicat
 
     public ImageViewer(Screen screen, String path) throws Exception {
         super(screen);
-        this.filePath = path == null || path.trim().isEmpty() ? "fs/test.img" : path.trim();
+        this.filePath = path == null || path.trim().isEmpty() ? "fs/system/sys/boot/img/loading.img" : path.trim();
         setPath(uiPath);
         setBgColor(bg);
         clearPixels();
@@ -55,6 +57,10 @@ public class ImageViewer extends TerminalApplication implements RunnableApplicat
         statusLabel = (Label) TUIElementsByID.get("status_label");
         pathField = (TextField) TUIElementsByID.get("path_field");
         pathField.setLines(List.of(filePath));
+
+        pathField.onClick = () -> {
+          focusTextField(pathField);
+        };
 
         PixelCanvas canvas = new PixelCanvas(screen);
         canvas.id = "image_canvas";
@@ -134,25 +140,16 @@ public class ImageViewer extends TerminalApplication implements RunnableApplicat
     }
 
     private void loadImage() {
+        ImageProvider provider = new ImageProvider();
+
         filePath = getPathFromField();
         clearPixels();
 
         try {
-            for (String line : call.parseFile(filePath)) {
-                line = line.trim();
-
-                if (line.isEmpty() || line.startsWith("#")) {
-                    continue;
-                }
-
-                String[] parts = line.split("/", 3);
-                if (parts.length != 3) {
-                    continue;
-                }
-
-                int x = Integer.parseInt(parts[0].trim());
-                int y = Integer.parseInt(parts[1].trim());
-                int color = Integer.decode(parts[2].trim());
+            for (Pixel pixel : provider.parseImage(filePath)) {
+                int x = pixel.getX();
+                int y = pixel.getY();
+                int color = pixel.getColor();
 
                 if (isInsideImage(x, y)) {
                     pixels[y][x] = color;
@@ -168,6 +165,8 @@ public class ImageViewer extends TerminalApplication implements RunnableApplicat
     }
 
     private void saveImage() throws Exception {
+        filePath = getPathFromField();
+
         if (filePath == null || filePath.trim().isEmpty()) {
             filePath = "fs/test.img";
         }

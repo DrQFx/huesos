@@ -1,0 +1,23 @@
+.data
+    _MEMORY_LIMIT : int | 1048576
+    _ALLOC_POS : int | 0
+.code
+    inc:
+        PUSH 1
+        ADD
+        RET
+    dec:
+        PUSH 1
+        SUB
+        RET
+
+    fill-rect:
+        LOADARG 0
+        LOADARG 1
+        LOADARG 2
+        LOADARG 3
+        LOADARG 4
+
+        CALL FILLRECT
+
+        RET

@@ -123,9 +123,9 @@ public class TextField extends TUIElement {
 
     public void moveRight() {
         if (cursorX < lines.get(cursorY).length()) {
-            cursorX++;
+            cursorX ++;
         } else if (cursorY < lines.size() - 1) {
-            cursorY++;
+            cursorY ++;
             cursorX = 0;
         }
         keepCursorVisible();

@@ -1,8 +1,8 @@
 package qf.huesos.kernel;
 
 import qf.huesos.apps.Terminal;
-import qf.huesos.apps.settings.Settings;
 import qf.huesos.apps.settings.SystemSettings;
+import qf.huesos.kernel.provider.ImageProvider;
 import qf.huesos.kernel.scheduler.Process;
 import qf.huesos.kernel.scheduler.RunnableApplication;
 import qf.huesos.kernel.scheduler.Scheduler;
@@ -14,7 +14,11 @@ public class Kernel {
     private final SystemSettings settings;
     public Terminal terminal;
 
+    private final String loadingImagePath = "fs/system/sys/boot/img/loading.img";
+
     public static final Screen screen = new Screen(800, 640);
+
+    private final ImageProvider imageProvider;
 
     public Kernel() throws Exception {
         if (instance != null) {
@@ -23,8 +27,13 @@ public class Kernel {
         instance = this;
 
         filesystem = new Filesystem("fs");
+
+        imageProvider = new ImageProvider();
+
         scheduler = new Scheduler(this, screen);
         scheduler.start();
+
+        imageProvider.drawImage(loadingImagePath, 0, 0, 800, 640);
 
         settings = new SystemSettings();
         settings.loadSettings();

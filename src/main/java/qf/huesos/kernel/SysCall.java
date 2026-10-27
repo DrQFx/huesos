@@ -5,6 +5,8 @@ import qf.huesos.kernel.scheduler.RunnableApplication;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 public class SysCall {
@@ -12,6 +14,9 @@ public class SysCall {
     // General
     public void runApplication(RunnableApplication runnableApplication) {
         Kernel.getInstance().runApplication(runnableApplication);
+    }
+    public void clearScreen(int color) {
+        Kernel.screen.clear(color);
     }
     public void print(String text, int color) {
         Kernel.getInstance().terminal.println(text, color);
@@ -57,6 +62,12 @@ public class SysCall {
     public void writeToFile(String name, List<String> data) throws IOException {
         Kernel.getInstance().getFilesystem().writeToFile(name, data);
     }
+    public void writeToFile(String name, String data, int pos) throws IOException {
+        Kernel.getInstance().getFilesystem().writeToFile(name, data, pos);
+    }
+    public void writeToFile(String name, List<String> data, int pos) throws IOException {
+        Kernel.getInstance().getFilesystem().writeToFile(name, data, pos);
+    }
     public void setDirectory(String pathname) {
         Kernel.getInstance().getFilesystem().setDirectory(pathname);
     }
@@ -71,5 +82,11 @@ public class SysCall {
     }
     public void copyFile(String path, String target) throws IOException {
         Kernel.getInstance().getFilesystem().copyFile(path, target);
+    }
+    public boolean exist(String path) {
+        return Kernel.getInstance().getFilesystem().exist(path);
+    }
+    public void createIfNotExist(String name, String path) {
+        Kernel.getInstance().getFilesystem().createIfNotExist(name, path);
     }
 }

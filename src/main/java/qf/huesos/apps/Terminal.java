@@ -5,6 +5,7 @@ import qf.huesos.apps.settings.SystemSettings;
 import qf.huesos.kernel.Kernel;
 import qf.huesos.kernel.Screen;
 import qf.huesos.kernel.SysCall;
+import qf.huesos.kernel.provider.ImageProvider;
 import qf.huesos.kernel.scheduler.Process;
 import qf.huesos.kernel.scheduler.RunnableApplication;
 import qf.huesos.kernel.provider.RAProvider;
@@ -270,6 +271,10 @@ public class Terminal implements RunnableApplication, KeyListener {
                 new RAProvider("fs/user/testo.ra");
                 break;
 
+            case "test1":
+                new ImageProvider().drawImage("fs/test.img", 0, 0, 640, 4800);
+                break;
+
             default:
                 if (isExecutable(cmd)) {
                     call.runApplication(new RAProvider(cmd));
@@ -362,7 +367,6 @@ public class Terminal implements RunnableApplication, KeyListener {
     protected long runApp(RunnableApplication rapp) throws Exception {
         this.active = false;
 
-
         return Kernel.getInstance().runApplication(rapp);
     }
 
@@ -414,6 +418,8 @@ public class Terminal implements RunnableApplication, KeyListener {
 
     @Override
     public void onStop() {
+        if (this.active)
+            this.active = false;
         screen.removeInputListener(this);
     }
 

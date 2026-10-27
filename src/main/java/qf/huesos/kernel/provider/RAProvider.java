@@ -2,16 +2,14 @@ package qf.huesos.kernel.provider;
 
 import qf.huesos.kernel.Kernel;
 import qf.huesos.kernel.Screen;
-import qf.huesos.kernel.provider.ra.Instruction;
-import qf.huesos.kernel.provider.ra.RAParser;
-import qf.huesos.kernel.provider.ra.Value;
+import qf.huesos.kernel.provider.ra.*;
 import qf.huesos.kernel.scheduler.Process;
 import qf.huesos.kernel.scheduler.RunnableApplication;
 import qf.huesos.kernel.SysCall;
 
 import java.util.*;
 
-public class RAProvider implements RunnableApplication {
+public class RAProvider implements RunnableApplication, Provider {
     private final int MEMORY_LIMIT = 1048576;
     private long PROCESS_ID;
     private int PC = 0;
@@ -22,7 +20,8 @@ public class RAProvider implements RunnableApplication {
     public String NAME;
 
     Stack<Value> stack = new Stack<>();
-    Stack<Integer> callStack = new Stack<>();
+    Stack<Frame> frameStack = new Stack<>();
+    List<Value> frameArguments = new Stack<>();
 
     Value[] memory = new Value[MEMORY_LIMIT];
     Map<String, Integer> variables = new HashMap<>(MEMORY_LIMIT);
@@ -42,12 +41,14 @@ public class RAProvider implements RunnableApplication {
             NAME = parser.getName();
             VERSION = parser.getVersion();
         } catch (NullPointerException e) {
-            throw new Exception("Invalid metadata");
+
         }
 
         if (getName() == null) {
             setName("RA Application");
         }
+
+        linkDependencies();
 
         for (Instruction instruction : instructions) {
             switch (instruction.getOpcode()) {
@@ -63,12 +64,56 @@ public class RAProvider implements RunnableApplication {
         execute(this.instructions);
     }
 
+    private void linkDependencies() throws Exception {
+        Queue<String> libsToLoad = new LinkedList<>();
+        Set<String> loadedLibs = new HashSet<>();
+
+        for (Instruction inst : instructions) {
+            if (inst.getOpcode() == Opcode.USE) {
+                String lib = inst.getValue().asString();
+                if (!loadedLibs.contains(lib)) {
+                    libsToLoad.add(lib);
+                }
+            }
+        }
+
+        while (!libsToLoad.isEmpty()) {
+            String libPath = libsToLoad.poll();
+            if (loadedLibs.contains(libPath)) continue;
+            loadedLibs.add(libPath);
+
+            RAParser libParser = new RAParser(call.parseFile(libPath));
+            List<Instruction> libInstructions = libParser.parse();
+
+            int offset = this.instructions.size();
+
+            for (Map.Entry<String, Integer> entry : libParser.getBreakPoints().entrySet()) {
+                if (!entry.getKey().equals("ENTRY")) {
+                    this.breakPoints.put(entry.getKey(), entry.getValue() + offset);
+                }
+            }
+
+            for (Instruction inst : libInstructions) {
+                if (inst.getOpcode() == Opcode.USE) {
+                    String newLib = inst.getValue().asString();
+                    if (!loadedLibs.contains(newLib)) {
+                        libsToLoad.add(newLib);
+                    }
+                }
+            }
+
+            this.instructions.addAll(libInstructions);
+        }
+    }
+
     private void execute(List<Instruction> instructions) throws Exception {
         while (PC < instructions.size() && !isFinished) {
             Instruction instruction = instructions.get(PC);
             int oldPC = PC;
 
             switch (instruction.getOpcode()) {
+                case USE -> {}
+                case VAR -> {}
                 case PUSH -> push(instruction.getValue());
                 case POP -> pop(instruction.getValue().asInt());
                 case ADD -> add();
@@ -76,15 +121,34 @@ public class RAProvider implements RunnableApplication {
                 case MUL -> mul();
                 case DIV -> div();
                 case CALL -> call(instruction.getValue().asString());
-                case VAR -> {}
                 case STORE -> {
-                    if (instruction.getSecondValue() != null) {
-                        store(instruction.getValue(), instruction.getSecondValue().asInt());
+                    store(instruction.getValue());
+                }
+                case LOAD -> {
+                    if (instruction.getValue() != null) {
+                        load(instruction.getValue());
                     } else {
-                        store(instruction.getValue().asInt());
+                        load();
                     }
                 }
-                case LOAD -> load(instruction.getValue().asInt());
+                case ARG -> {
+                    if (instruction.getValue() !=null && instruction.getSecondValue() != null) {
+                        frameArguments.add(instruction.getValue().asInt(), instruction.getSecondValue());
+                    } else {
+                        throw new Exception("Invalid ARG usage");
+                    }
+                }
+                case LOADARG -> {
+                    if (!frameStack.isEmpty()) {
+                        Frame frame = frameStack.peek();
+                        Value arg = frame.getArguments().get(instruction.getValue().asInt());
+
+                        push(arg);
+                    } else {
+                        throw new Exception("LOADARG instruction outside a function || The frame stack is empty");
+                    }
+                }
+                case DB -> declareLocalVariable(instruction.getSecondValue().asString(), instruction.getValue());
                 case SWAP -> swap();
                 case DUP -> dup();
                 case DROP -> drop();
@@ -112,12 +176,18 @@ public class RAProvider implements RunnableApplication {
         }
     }
 
+    private void use(Value item) throws Exception {
+        String path = item.asString();
+        RAParser parser = new RAParser(call.parseFile(path));
+        List<Instruction> libInstructions = parser.parse();
+
+        instructions.addAll(PC + 1, libInstructions);
+        breakPoints.putAll(parser.getBreakPoints());
+    }
+
     // STACK
-    private void push(Value item) {
-        if (item.getType() == Value.Type.STR && isVariable(item.asString())) {
-            item = memory[variables.get(item.asString())];
-        }
-        stack.push(item);
+    private void push(Value item) throws Exception {
+        stack.push(resolveValue(item));
     }
 
     private Value pop(int addr) {
@@ -152,25 +222,25 @@ public class RAProvider implements RunnableApplication {
     }
 
     // METH
-    private void add() {
+    private void add() throws Exception {
         int b = stack.pop().asInt();
         int a = stack.pop().asInt();
         push(Value.of(Value.Type.INT, a + b));
     }
 
-    private void sub() {
+    private void sub() throws Exception {
         int b = stack.pop().asInt();
         int a = stack.pop().asInt();
         push(Value.of(Value.Type.INT, a - b));
     }
 
-    private void div() {
+    private void div() throws Exception {
         int b = stack.pop().asInt();
         int a = stack.pop().asInt();
         push(Value.of(Value.Type.INT, a / b));
     }
 
-    private void mul() {
+    private void mul() throws Exception {
         int b = stack.pop().asInt();
         int a = stack.pop().asInt();
         push(Value.of(Value.Type.INT, a * b));
@@ -230,10 +300,10 @@ public class RAProvider implements RunnableApplication {
     }
 
     private void RET() throws Exception {
-        if (callStack.isEmpty()) {
-            throw new Exception("Call stack underflow: RET called without a matching CALL");
+        if (frameStack.isEmpty()) {
+            throw new Exception("Frame stack underflow: RET called without a matching CALL");
         }
-        PC = callStack.pop();
+        PC = frameStack.pop().getReturnAddress();
     }
 
     private void HALT() {
@@ -246,22 +316,30 @@ public class RAProvider implements RunnableApplication {
     // MEMORY
     private void store(Value item, int addr) {
         if (item.getType() == Value.Type.STR && isVariable(item.asString())) {
-            item = memory[variables.get(item.asString())];
+            if (item.asString().startsWith("&")) {
+                String name = item.asString().substring(1);
+                item = Value.of(Value.Type.INT, variables.get(name));
+            } else {
+                item = memory[variables.get(item.asString())];
+            }
         }
         memory[addr] = item;
     }
 
-    private void store(int addr) {
+    private void store(int addr) throws Exception {
         Value item = stack.pop();
-        if (item.getType() == Value.Type.STR && isVariable(item.asString())) {
-            item = memory[variables.get(item.asString())];
-        }
-        memory[addr] = item;
+
+        memory[addr] = resolveValue(item);
+    }
+    private void store(Value item) throws Exception {
+        memory[resolveValue(item).asInt()] = stack.pop();
     }
 
-    private Value load(int addr) {
-        push(memory[addr]);
-        return memory[addr];
+    private void load(Value item) throws Exception {
+        push(memory[resolveValue(item).asInt()]);
+    }
+    private void load() throws Exception {
+        push(memory[stack.pop().asInt()]);
     }
 
     private int pushMem(Value item) throws Exception {
@@ -274,15 +352,41 @@ public class RAProvider implements RunnableApplication {
         throw new Exception("Out of memory");
     }
 
+    private void pushMemIns(Value item) throws Exception {
+        for (int curr = 0; curr < MEMORY_LIMIT; curr++) {
+            if (memory[curr] == null) {
+                memory[curr] = item;
+                stack.push(Value.of(Value.Type.INT, curr));
+            }
+        }
+        throw new Exception("Out of memory");
+    }
+
     private List<Integer> declareVariable(String name, Value value) throws Exception {
         List<Integer> addresses = new ArrayList<>();
         addresses.add(pushMem(value));
         variables.put(name, addresses.get(0));
         return addresses;
     }
+    private void declareLocalVariable(String name, Value value) throws Exception {
+        if (frameStack.isEmpty()) {
+            throw new Exception("Local variable declaration outside a function || Frame Stack is empty");
+        }
+        Frame frame = frameStack.peek();
+
+        int addr = pushMem(value);
+
+        frame.addLocal(name, addr);
+    }
 
     private boolean isVariable(String name) {
-        return variables.get(name) != null;
+        if (!frameStack.isEmpty()) {
+            Frame frame = frameStack.peek();
+            if (frame.isLocalVariable(name))
+                return true;
+        }
+
+        return variables.containsKey(name);
     }
 
     private void call(String label) throws Exception {
@@ -303,13 +407,134 @@ public class RAProvider implements RunnableApplication {
             return;
         }
 
+        if (label.equals("FILLRECT")) {
+            int color = stack.pop().asInt();
+            int w = stack.pop().asInt();
+            int h = stack.pop().asInt();
+            int y = stack.pop().asInt();
+            int x = stack.pop().asInt();
+
+            call.fillRectangle(x, y, w, h, color);
+
+            return;
+        }
+
+        if (label.equals("KILL")) {
+            long processId = stack.pop().asLong();
+
+            call.killProcess(processId);
+            return;
+        }
+
+        if (label.equals("NFILE")) {
+            String fileName = stack.pop().asString();
+
+            call.newFile(fileName);
+            return;
+        }
+
+        if (label.equals("MDIR")) {
+            String dirName = stack.pop().asString();
+
+            call.makeDirectory(dirName);
+            return;
+        }
+
+        if (label.equals("FWRITE")) {
+            String path = stack.pop().asString();
+            String data = stack.pop().asString();
+
+            call.writeToFile(path, data);
+            return;
+        }
+
+        if (label.equals("SETDIR")) {
+            String dir = stack.pop().asString();
+
+            call.setDirectory(dir);
+            return;
+        }
+
+        if (label.equals("FMOV")) {
+            String file = stack.pop().asString();
+            String dest = stack.pop().asString();
+
+            call.moveFile(file, dest);
+            return;
+        }
+
+        if (label.equals("FCP")) {
+            String file = stack.pop().asString();
+            String dest = stack.pop().asString();
+
+            call.copyFile(file, dest);
+            return;
+        }
+
+        if (label.equals("GETDIR")) {
+            stack.push(Value.of(Value.Type.STR, call.getDirectory()));
+            return;
+        }
+
+        if (label.equals("CLEAR")) {
+            int color = stack.pop().asInt();
+
+            call.clearScreen(color);
+            return;
+        }
+
+        // --------------------------------------------------------
+
+        Frame frame = new Frame();
+
+        if (!frameArguments.isEmpty()) {
+            List<Value> args = new ArrayList<>(frameArguments);
+            frame.setArguments(args);
+
+            frameArguments.clear();
+        }
+
         if (breakPoints.containsKey(label)) {
-            callStack.push(PC + 1);
+            frame.setReturnAddress(PC + 1);
+            frameStack.push(frame);
             PC = breakPoints.get(label);
             return;
         }
 
         throw new Exception("Invalid syscall or unknown function label: " + label);
+    }
+
+    private Value resolveValue(Value item) throws Exception {
+        if (item.getType() == Value.Type.STR) {
+            String strVal = item.asString();
+            if (strVal.startsWith("&")) {
+                String name = strVal.substring(1);
+                if (isVariable(name)) {
+                    if (!frameStack.isEmpty()) {
+                        Frame frame = frameStack.peek();
+                        if (frame.isLocalVariable(name)) {
+                            return Value.of(Value.Type.INT, frame.getLocal(name));
+                        }
+                    } else {
+                        return Value.of(Value.Type.INT, variables.get(name));
+                    }
+                } else {
+                    throw new Exception("Unknown pointer: " + strVal);
+                }
+            }
+
+            else if (!frameStack.isEmpty() && isVariable(strVal)) {
+                Frame frame = frameStack.peek();
+                if (frame.isLocalVariable(strVal)) {
+                    return memory[frame.getLocal(strVal)];
+                }
+            }
+
+            else if (isVariable(strVal)) {
+                return memory[variables.get(strVal)];
+            }
+        }
+        return item;
     }
 
     @Override

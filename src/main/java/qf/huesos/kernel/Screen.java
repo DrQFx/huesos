@@ -13,7 +13,7 @@ import java.awt.image.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
-import javax.swing.JFrame; // Используем Swing для стабильности, но можно и Frame
+import javax.swing.JFrame;
 
 public class Screen extends JFrame {
     private BufferedImage displayBuffer;
@@ -66,7 +66,7 @@ public class Screen extends JFrame {
         canvas.requestFocus();
     }
 
-    // ============ PUBLIC API ЭКРАНА ============
+    // API
 
     public void clear(int color) {
         for (int i = 0; i < pixelData.length; i++) {
@@ -125,10 +125,10 @@ public class Screen extends JFrame {
         Toolkit.getDefaultToolkit().sync();
     }
 
-    // === Вспомогательные методы для Терминала ===
+    // ---------------------------------------
 
     public int getCharWidth() {
-        return fontMetrics.charWidth('W'); // Для моноширинного шрифта
+        return fontMetrics.charWidth('W');
     }
 
     public int getLineHeight() {
@@ -150,7 +150,7 @@ public class Screen extends JFrame {
         canvas.repaint();
     }
 
-    // === Приватные методы ===
+    // ----------------------------------------------
 
     private void setPixelSafe(int x, int y, int color) {
         if (x >= 0 && x < width && y >= 0 && y < height) {

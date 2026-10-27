@@ -1,0 +1,6 @@
+
+.code
+    print_hello:
+        PUSH hello
+        CALL PRINT
+        RET

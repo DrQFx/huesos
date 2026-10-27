@@ -55,30 +55,32 @@ public class Settings extends TerminalApplication implements RunnableApplication
     }
 
     private void bindUiLogic() {
-        terminalColorField = (TextField) TUIElementsByID.get("terminal_color");
-        test_box = (CheckBox) TUIElementsByID.get("test_box");
-
         category = (Button) TUIElementsByID.get(currentCategory);
 
-        test_box.isClicked = "true".equals(SystemSettings.TEST_VALUE);
+        if (currentCategory.equals("category_general")) {
+            terminalColorField = (TextField) TUIElementsByID.get("terminal_color");
+            test_box = (CheckBox) TUIElementsByID.get("test_box");
 
-        terminalColorField.setLines(List.of(SystemSettings.TERMINAL_COLOR));
-        terminalColorField.setTextColor(Kernel.screen.COLOR_WHITE);
+            test_box.isClicked = "true".equals(SystemSettings.TEST_VALUE);
+
+            terminalColorField.setLines(List.of(SystemSettings.TERMINAL_COLOR));
+            terminalColorField.setTextColor(Kernel.screen.COLOR_WHITE);
+
+            test_box.onClick = () -> {
+                try {
+                    qson.writeStatement(settingsPath, "test", test_box.isClicked ? "true" : "false");
+                    setStatus("Saved: test = " + test_box.isClicked);
+                } catch (Exception e) {
+                    setStatus("Cannot save settings: " + e.getMessage());
+                }
+            };
+        }
 
         if (category != (Button) TUIElementsByID.get(currentCategory)) {
             category.setColor(0x4d4d4d);
         } else {
             category.setColor(0xadadad);
         }
-
-        test_box.onClick = () -> {
-            try {
-                qson.writeStatement(settingsPath, "test", test_box.isClicked ? "true" : "false");
-                setStatus("Saved: test = " + test_box.isClicked);
-            } catch (Exception e) {
-                setStatus("Cannot save settings: " + e.getMessage());
-            }
-        };
     }
 
     private void bindButtons() {
@@ -112,26 +114,24 @@ public class Settings extends TerminalApplication implements RunnableApplication
     private void changeCategory(String category) throws Exception {
         switch (category) {
             case "category_general":
-                stop();
-                setPath(generalPath);
-                removeAll();
-                start();
+                changeCategoryByPath(generalPath);
                 break;
             case "category_system_variables":
-                stop();
-                setPath(systemVariablesPath);
-                removeAll();
-                start();
+                changeCategoryByPath(systemVariablesPath);
                 break;
             case "category_languages":
-                stop();
-                setPath(languagesPath);
-                removeAll();
-                start();
+                changeCategoryByPath(languagesPath);
                 break;
             default:
                 throw new Exception("Invalid category");
         }
+    }
+
+    private void changeCategoryByPath(String path) throws Exception {
+        stop();
+        setPath(path);
+        removeAll();
+        start();
     }
 
     private void applySettings() throws Exception {

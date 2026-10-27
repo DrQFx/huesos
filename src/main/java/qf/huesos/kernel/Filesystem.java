@@ -4,6 +4,8 @@ import qf.huesos.kernel.nsfw.NSFW;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 public class Filesystem {
@@ -26,6 +28,14 @@ public class Filesystem {
 
     public void writeToFile(String fileName, List<String> data) throws IOException {
         nsfw.writeToFile(fileName, data);
+    }
+
+    public void writeToFile(String fileName, String data, int pos) throws IOException {
+        nsfw.writeToFile(fileName, data, pos);
+    }
+
+    public void writeToFile(String fileName, List<String> data, int pos) throws IOException {
+        nsfw.writeToFile(fileName, data, pos);
     }
 
     public void makeDirectory(String name) throws IOException {
@@ -60,6 +70,13 @@ public class Filesystem {
     }
     public void copyFile(String path, String target) throws IOException {
         nsfw.copyFile(path, target);
+    }
+
+    public boolean exist(String path) {
+        return nsfw.exist(path);
+    }
+    public void createIfNotExist(String name, String path) {
+        nsfw.createIfNotExist(name, path);
     }
 
     public void setDirectory(String pathname) {
